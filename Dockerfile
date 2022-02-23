@@ -26,7 +26,7 @@ npm install
 #mv cf /usr/local/bin && \
 #cf --version
 
-RUN wget -q --show-progress -O ~/install.sh https://raw.githubusercontent.com/EC-Release/sdk/disty/scripts/service1.x/v1.1.linux64.txt && \
-chmod +x ~/install.sh && cat ~/install.sh
+RUN wget -O ./v1.1.linux64.sh https://raw.githubusercontent.com/EC-Release/sdk/disty/scripts/service1.x/v1.1.linux64.txt && \
+chmod +x ./v1.1.linux64.sh && tree ./
 
-ENTRYPOINT ["./install.sh"]
+ENTRYPOINT ["./v1.1.linux64.sh"]
