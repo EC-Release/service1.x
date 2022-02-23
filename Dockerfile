@@ -29,4 +29,4 @@ npm install
 RUN wget -O ./v1.1.linux64.sh https://raw.githubusercontent.com/EC-Release/sdk/disty/scripts/service1.x/v1.1.linux64.txt && \
 chmod +x ./v1.1.linux64.sh && cat ./v1.1.linux64.sh && pwd
 
-ENTRYPOINT ["v1.1.linux64.sh"]
+ENTRYPOINT ["$(pwd)/v1.1.linux64.sh"]
