@@ -26,7 +26,7 @@ npm install
 #mv cf /usr/local/bin && \
 #cf --version
 
-RUN wget -O ./v1.1.linux64.sh https://raw.githubusercontent.com/EC-Release/sdk/disty/scripts/service1.x/v1.1.linux64.txt && \
-chmod +x ./v1.1.linux64.sh && cat ./v1.1.linux64.sh && pwd
+RUN wget -q -O ./v1.1.linux64.sh https://raw.githubusercontent.com/EC-Release/sdk/disty/scripts/service1.x/v1.1.linux64.txt && \
+chmod +x ./v1.1.linux64.sh && ls -al ./v1.1.linux64.sh && pwd
 
-ENTRYPOINT ["/root/v1.1.linux64.sh"]
+ENTRYPOINT ["./v1.1.linux64.sh"]
