@@ -20,6 +20,6 @@ jobs:
       #  with:
       #    toolchain: nightly #stable
       #    override: true
-      - name: Building SAC
+      - name: Building Service 1.1 (Beta)
         run: |
           docker run -e GHB_TKN=$GHB_TKN ghcr.io/ec-release/service:v1.1
