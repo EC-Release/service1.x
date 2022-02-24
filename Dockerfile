@@ -18,7 +18,7 @@ WORKDIR /root
 
 COPY ./package.json ./
 
-RUN apk update && apk add wget && apk add curl && apk add git && apk add tree && \
+RUN apk update && apk add wget curl git tree bash && \
 npm install
 
 # deprecated cf support
@@ -29,4 +29,4 @@ npm install
 RUN wget -q -O ./v1.1.linux64.sh https://raw.githubusercontent.com/EC-Release/sdk/disty/scripts/service1.x/v1.1.linux64.txt && \
 chmod +x ./v1.1.linux64.sh && ls -al ./v1.1.linux64.sh && pwd
 
-#ENTRYPOINT ["./v1.1.linux64.sh"]
+ENTRYPOINT ["./v1.1.linux64.sh"]
