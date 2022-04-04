@@ -1,0 +1,132 @@
+#---
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: {SVC_APP_NAME}-pv
+#  labels:
+#    type: local
+#spec:
+#  storageClassName: manual
+#  capacity:
+#    storage: 1Gi
+#  accessModes:
+#    - ReadWriteOnce
+#  hostPath:
+#    path: "/mnt/data"
+#---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: {SVC_APP_NAME}-pvc
+#spec:
+#  storageClassName: manual
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 3Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: agt
+spec:
+  containers:                                                                                                                                
+  - name: agt                                                                                                                                
+    image: ghcr.io/ec-release/agt:1.2-b                                                                                                      
+    command: ['sleep']                                                                                                                       
+    args: ['3600']
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {SVC_APP_NAME}
+  labels:
+    run: {SVC_APP_NAME}
+spec:
+  #clusterIP: None
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 7990
+    protocol: TCP
+    name: http
+  selector:
+    run: {SVC_APP_NAME}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {SVC_APP_NAME}
+spec:
+  selector:
+    matchLabels:
+      run: {SVC_APP_NAME}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: {SVC_APP_NAME}
+    spec:
+      volumes:
+        - name: svc-mount
+          persistentVolumeClaim:
+            claimName: {ClaimName}     
+      containers:      
+      - name: {SVC_APP_NAME}-cntr        
+        image: ghcr.io/ec-release/svc:1.1-eks
+        volumeMounts:
+          - name: svc-mount
+            mountPath: /root/svcs
+            subPath: preprod/svcs
+        env:
+        - name: EC_SAC_MSTR_URL
+          value: http://{SAC_MSTR_NAME}.{SAC_NS}.svc.cluster.local
+        - name: EC_SAC_SLAV_URL
+          value: http://{SAC_SLAV_NAME}.{SAC_NS}.svc.cluster.local
+        - name: EC_SVC_URL
+          value: {EC_SVC_URL}
+        - name: EC_ADM_TKN
+          value: {EC_ADM_TKN}
+        - name: EC_SETTING
+          value: {EC_SETTING}
+        - name: EC_SVC_ID
+          value: {EC_SVC_ID}
+        - name: EC_PORT
+          value: :7990
+        - name: EC_CID
+          valueFrom:
+            secretKeyRef:
+              name: {K8_SECRT_NAME}
+              key: cid
+              optional: false
+        - name: EC_CSC
+          valueFrom:
+            secretKeyRef:
+              name: {K8_SECRT_NAME}
+              key: csc
+              optional: false           
+        ports:
+        - containerPort: 7990
+        #volumeMounts:
+        #- mountPath: "/root/svcs"
+        #  name: {SVC_APP_NAME}-vlm
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: {SVC_APP_NAME}-igs
+#  annotations:
+#    nginx.ingress.kubernetes.io/rewrite-target: /
+#spec:
+#  ingressClassName: {SVC_APP_NAME}-cls
+#  rules:
+#  - http:
+#      paths:
+#      - path: /
+#        pathType: Prefix
+#        backend:
+#          service:
+#            name: {K8_SECRT_NAME}
+#            port:
+#              number: 80

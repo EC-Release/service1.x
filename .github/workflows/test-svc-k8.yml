@@ -1,0 +1,28 @@
+name: Test Service 1.1 (K8)
+on:
+  #schedule:
+    #NY 23:00pm
+    #- cron: '*/20 * * * *'
+    #- cron: '0 3 * * *'
+  workflow_dispatch:
+jobs:
+  build:      
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    environment: dev
+    env:
+      #for build only
+      EC_GITHUB_TOKEN: ${{secrets.MY_GITHUB_TKN}}      
+      EC_BUILD_ID: ${{ github.run_number }}
+      COGNITO_URL: ${{secrets.COGNITO_URL}}
+      COGNITO_CID: ${{secrets.COGNITO_CID}}
+      COGNITO_CSC: ${{secrets.COGNITO_CSC}}    
+      PRNT_KEY: ${{secrets.PRNT_KEY}}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Start minikube
+        uses: medyagh/setup-minikube@master
+      - name: Verify cluster
+        run: kubectl get pods -A
+      - name: Test Service 1.1 Comp. (K8)
+        run: chmod +x ./test/e2e-k8.sh && ./test/e2e-k8.sh
