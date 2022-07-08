@@ -1,8 +1,8 @@
 name: Test Service 1.1 (Docker)
 on:
-  schedule:
+  #schedule:
     #NY 23:00pm
-    - cron: '*/60 * * * *'
+    #- cron: '*/60 * * * *'
     #- cron: '0 3 * * *'
   workflow_dispatch:
 jobs:
